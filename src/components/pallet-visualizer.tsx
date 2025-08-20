@@ -135,14 +135,19 @@ export function PalletVisualizer({
     if (!mountRef.current) return;
     const currentMount = mountRef.current;
 
-    // Scene
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(
-      getComputedStyle(document.documentElement).getPropertyValue("--card")
-    );
+    const cssColor = getComputedStyle(document.documentElement)
+      .getPropertyValue("--card")
+      .trim();
+    let backgroundColor: THREE.Color | string =
+      cssColor && cssColor !== "" ? cssColor : "#f5f5f5";
+    try {
+      scene.background = new THREE.Color(`hsl(${backgroundColor})`);
+    } catch {
+      scene.background = new THREE.Color("#f5f5f5");
+    }
     sceneRef.current = scene;
 
-    // Camera
     const camera = new THREE.PerspectiveCamera(
       50,
       currentMount.clientWidth / currentMount.clientHeight,
@@ -320,16 +325,16 @@ export function PalletVisualizer({
         scene.add(mesh);
         boxMeshesRef.current.set(box.id, mesh);
 
-        const labelDiv = document.createElement("div");
-        labelDiv.className =
-          "text-xs bg-card/80 backdrop-blur-sm text-card-foreground px-2 py-1 rounded shadow-lg";
-        labelDiv.textContent = `${box.length}x${box.width}x${box.height}`;
-        labelDiv.style.visibility = "hidden";
+        // const labelDiv = document.createElement("div");
+        // labelDiv.className =
+        //   "text-xs bg-card/80 backdrop-blur-sm text-card-foreground px-2 py-1 rounded shadow-lg";
+        // // labelDiv.textContent = `${box.length}x${box.width}x${box.height}`;
+        // labelDiv.style.visibility = "hidden";
 
-        const label = new CSS2DObject(labelDiv);
-        label.position.set(0, box.rotatedHeight / 2 + 10, 0);
-        mesh.add(label);
-        labelMeshesRef.current.set(box.id, label);
+        // const label = new CSS2DObject(labelDiv);
+        // label.position.set(0, box.rotatedHeight / 2 + 10, 0);
+        // mesh.add(label);
+        // labelMeshesRef.current.set(box.id, label);
       } else {
         // Update geometry
         mesh.geometry.dispose();
@@ -418,6 +423,8 @@ export function PalletVisualizer({
               }}
               className="bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded shadow-lg"
             >
+              {hoveredBox.name || "Unnamed Box"}
+              <br />
               {hoveredBox.length.toFixed(1)} x {hoveredBox.width.toFixed(1)} x{" "}
               {hoveredBox.height.toFixed(1)} cm
               <br />

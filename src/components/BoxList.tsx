@@ -17,6 +17,7 @@ interface BoxListProps {
 }
 
 export function BoxList ({ boxes, removeBox, handleOptimize, clearAll, isLoading }: BoxListProps) {
+  console.log(boxes);
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -36,8 +37,8 @@ export function BoxList ({ boxes, removeBox, handleOptimize, clearAll, isLoading
                 <div key={box.id} className="flex items-center justify-between p-3 border border-gray-300 shadow-sm bg-gray-200 rounded-lg">
                   <div style={{ backgroundColor: box.color }} className="w-4 h-4 rounded-sm shrink-0"></div>
                   <div className="text-sm">
-                    <p className="font-medium">{box.length} x {box.width} x {box.height} cm</p>
-                    <p className="text-xs text-muted-foreground">{box.weight} kg</p>
+                    <p className="font-medium">   {box.name} </p>
+                    <p className="text-xs text-muted-foreground"> {box.length} x {box.width} x {box.height} cm || {box.weight} kg</p>
                   </div>
                 
                   <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => removeBox(box.id)}>

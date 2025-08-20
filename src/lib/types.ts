@@ -5,6 +5,7 @@ export interface Box {
   length: number;
   weight: number;
   color: string;
+  name: string;
 }
 
 export interface PlacedBox extends Box {
@@ -14,6 +15,7 @@ export interface PlacedBox extends Box {
   rotatedWidth: number;
   rotatedLength: number;
   rotatedHeight: number;
+  name: string;
 }
 
 // Standard EUR pallet dimensions in cm

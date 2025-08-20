@@ -3,7 +3,8 @@
 import { useForm, type SubmitHandler, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { PackagePlus } from "lucide-react";
-import { z } from "zod"; // Import z from zod
+import { z } from "zod";
+import Papa from "papaparse";
 
 import { Button } from "@/components/ui/button";
 
@@ -31,7 +32,51 @@ interface AddBoxFormProps {
   boxForm: UseFormReturn<BoxFormData>;
   addBox: SubmitHandler<BoxFormData>;
 }
+
 export function AddBoxForm({ boxForm, addBox }: AddBoxFormProps) {
+  const handleCSVUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        const data = results.data as Array<Record<string, string>>;
+        if (data.length === 0) {
+          alert("CSV file is empty.");
+          return;
+        }
+        // Add each box from CSV
+        data.forEach((row) => {
+          try {
+            const box: BoxFormData = {
+              name: row.name || "",
+              length: Number(row.length),
+              width: Number(row.width),
+              height: Number(row.height),
+              weight: Number(row.weight),
+            };
+            // Validate using schema before adding
+            const parsed = boxSchema.safeParse(box);
+            if (parsed.success) {
+              addBox(box);
+            }
+          } catch (error) {
+            // skip invalid row
+          }
+        });
+        // After all boxes are added, run optimize
+        if (typeof (window as any).optimize === "function") {
+          (window as any).optimize();
+        }
+      },
+      error: () => {
+        alert("Failed to parse CSV file.");
+      },
+    });
+  };
+
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -103,6 +148,15 @@ export function AddBoxForm({ boxForm, addBox }: AddBoxFormProps) {
                 </p>
               )}
             </div>
+          </div>
+          <div className="grid grid-cols-1 gap-4">
+            <Label htmlFor="csvUpload">Upload CSV</Label>
+            <Input
+              id="csvUpload"
+              type="file"
+              accept=".csv"
+              onChange={handleCSVUpload}
+            />
           </div>
           <Button
             type="submit"

@@ -115,7 +115,14 @@ export function optimizePacking(
         if (bestFit) {
             placedBoxes.push(bestFit);
         } else {
-            unplacedBoxes.push(boxToPlace);
+            const canFitAtAll = rotations.some(r =>
+                r.l <= pallet.length && r.w <= pallet.width && r.h <= pallet.maxHeight
+            );
+            if (!canFitAtAll || placedBoxes.length > 0) {
+                unplacedBoxes.push(boxToPlace);
+            } else {
+                unplacedBoxes.push(boxToPlace);
+            }
         }
     }
 

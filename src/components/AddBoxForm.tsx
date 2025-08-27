@@ -41,7 +41,7 @@ export function AddBoxForm({ boxForm, addBox }: AddBoxFormProps) {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      complete: (results) => {
+      complete: (results: { data: Record<string, string>[]; }) => {
         const data = results.data as Array<Record<string, string>>;
         if (data.length === 0) {
           alert("CSV file is empty.");

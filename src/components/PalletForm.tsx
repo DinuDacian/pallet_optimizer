@@ -3,7 +3,6 @@
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Card,
   CardContent,
@@ -19,15 +18,20 @@ export const palletSchema = z.object({
   width: z.coerce.number().positive({ message: "Must be > 0" }),
   length: z.coerce.number().positive({ message: "Must be > 0" }),
   maxHeight: z.coerce.number().positive({ message: "Must be > 0" }),
+  maxWeight: z.coerce.number().positive({ message: "Must be > 0" }),
 });
 
 export type PalletFormData = z.infer<typeof palletSchema>;
 
 interface PalletFormProps {
   palletForm: UseFormReturn<PalletFormData>;
+  onDimensionsChange: () => void;
 }
 
-export function PalletForm({ palletForm }: PalletFormProps) {
+export function PalletForm({
+  palletForm,
+  onDimensionsChange,
+}: PalletFormProps) {
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -36,9 +40,7 @@ export function PalletForm({ palletForm }: PalletFormProps) {
           Pallet Dimensions
         </CardTitle>
         <CardDescription>
-          Enter pallet dimensions (cm).
-          <br />
-          (Will be available in next version)
+          Enter pallet dimensions (cm) & weight (kg).
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -52,6 +54,7 @@ export function PalletForm({ palletForm }: PalletFormProps) {
                 id="palletLength"
                 type="number"
                 {...palletForm.register("length")}
+                onChange={onDimensionsChange}
                 disabled
               />
               {palletForm.formState.errors.length && (
@@ -66,6 +69,7 @@ export function PalletForm({ palletForm }: PalletFormProps) {
                 id="palletWidth"
                 type="number"
                 {...palletForm.register("width")}
+                onChange={onDimensionsChange}
                 disabled
               />
               {palletForm.formState.errors.width && (
@@ -74,17 +78,33 @@ export function PalletForm({ palletForm }: PalletFormProps) {
                 </p>
               )}
             </div>
-            <div className="col-span-2">
+            <div>
               <Label htmlFor="palletMaxHeight">Max Load Height</Label>
               <Input
                 id="palletMaxHeight"
                 type="number"
                 {...palletForm.register("maxHeight")}
+                onChange={onDimensionsChange}
                 disabled
               />
               {palletForm.formState.errors.maxHeight && (
                 <p className="text-destructive text-xs mt-1">
                   {palletForm.formState.errors.maxHeight.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <Label htmlFor="palletMaxWeight">Max Weight</Label>
+              <Input
+                id="palletMaxWeight"
+                type="number"
+                {...palletForm.register("maxWeight")}
+                onChange={onDimensionsChange}
+                disabled
+              />
+              {palletForm.formState.errors.maxWeight && (
+                <p className="text-destructive text-xs mt-1">
+                  {palletForm.formState.errors.maxWeight.message}
                 </p>
               )}
             </div>
